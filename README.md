@@ -29,12 +29,14 @@ To make sure everything is setup correctly you can:
    - Open a terminal in VS Code and run `python -V`, which should return a Python version >= 3.9.
    - Run `poetry -V`, which should return any version of Poetry.
 
-6. That's it! You should be all setup now.<!-- You can close VS Code and the tabs you have opened in your browser. -->
+6. To install the project, in the VS Code terminal run `poetry install`.
+
+7. That's it! You should be all setup now.<!-- You can close VS Code and the tabs you have opened in your browser. -->
 You can delete the codespace to save your account Usage/Storage hours and start a new one during the training. -->
 ![assets/codespace-close.png](assets/codespace-close.png)
 
 ## Slides
-The slides for this course can be found [here](https://xebiagroup.sharepoint.com/:f:/r/sites/Training/Gedeelde%20documenten/2.%20Training%20Material/1.%20Master%20Slides/Building%20LLM%20Applications?csf=1&web=1&e=siZQh3).
+The slides for this course can be distributed as PDF.
 
 ## Exercises
 Each part of the training consists of a set of exercises.
@@ -52,32 +54,11 @@ Please check the documentation on [port forwarding](https://docs.github.com/en/c
 This is an open-ended exercise where you can apply the concepts you've learned in the training.
 You find the instructions in the [exercises/42_hackathon/readme.md](./exercises/42_hackathon/README.md).
 
-## Instructions for the training developer
-### Preparing the training
-All the needed preparing for the training can be found in the [docs_for_trainers](docs_for_trainers/READMD.md) folder.
-Make sure you read this before you start the training.
+## Miro
 
-### Developing exercises
-The exercises are generated automatically.
-Please develop and make changes only in the solutions folder.
-Then run the following command to generate the exercises:
+[Miro board](https://miro.com/app/board/uXjVLYCaxj8=/?share_link_id=765687895125)
 
-```bash
-poetry run invoke generate-exercises
-```
-
-This will automatically generate the exercises and copy them to the `exercises` folder.
-It also automatically removes all the code between the `# START CODE HERE` and `# END CODE HERE` comments in the notebooks and python files.
-
-If you use pre-commit, this will be run automatically before each commit.
-So you don't have to worry about it.
-You can add the pre-commit hook by running the following command:
-
-```bash
-poetry run pre-commit install
-```
-
-If you don't use pre-commit, the CI will fail if you forget to run this command.
+Password: Building-LLM-Applications
 
 ## About
 
