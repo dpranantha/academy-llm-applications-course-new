@@ -80,7 +80,7 @@ def function_calling_agent(
     user_prompt: str,
     *functions: Callable,
     react: bool = False,
-    model_name: str = "GPT_35_CHAT_MODEL_NAME",
+    model_name: str = "GPT_4_MODEL_NAME",
     temperature: float = 0.0,
     iterations: int = 3,
 ) -> str:
