@@ -1,6 +1,6 @@
 # LLM applications
 ![assets/xebia-logo.png](assets/xebia-logo.png)
-Hi! 👋🏻
+Hi! 👋🏻 
 
 This repository contains the exercises and material we will cover during the "LLM applications" training.
 
