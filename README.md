@@ -16,23 +16,34 @@ Alternatively, we provide a devcontainer that spins up an environment that you c
 
 1. ✅ Access the repository
 2. Open or create a codespace on the `main` branch:
-![assets/create-codespace.png](assets/create-codespace.png)
+<p align="center">
+<img src=assets/create-codespace.png>
+</p>
 3. [Codespaces](https://docs.github.com/en/codespaces/overview) allow you to work on a repository on a computer other than your own, saving you from the trouble of setting everything up yourself. After creating your codespace succesfully, you should see a VS Code interface in your browser:
-![assets/codespace-browser.png](assets/codespace-browser.png)
-
+<p align="center">
+<img src=assets/codespace-browser.png>
+</p>
 4. (Optional) Access the codespace in your locally installed VS Code Desktop. To do so, open the command palette in VS Code you have opened in your browser. To open the command palette, on Mac the shortcut is `⌘+SHIFT+P`, on Windows and Linux it is `Ctrl+Shift+P`. From the command palette, select "Codespaces: Open in VS Code Desktop", and follow the steps to open VS Code locally.
-![assets/open-vscode-desktop.png](assets/open-vscode-desktop.png)
-5. You should now have access to the code, in your personal codespace, in your locally installed VS Code Desktop.
-![assets/codespace-vscode.png](assets/codespace-vscode.png)
+<p align="center">
+<img src=assets/open-vscode-desktop.png>
+</p>
+5. You should now have access to the code, in your personal codespace (either in the browser or in your locally installed VS Code Desktop).
+<p align="center">
+<img src=assets/codespace-vscode.png>
+</p>
+
 To make sure everything is setup correctly you can:
-   - Inspect the bottom left corner, which should say "Codespaces" (may be located elsewhere in the Windows version)
-   - Open a terminal in VS Code and run `python -V`, which should return a Python version >= 3.9.
-   - Run `poetry -V`, which should return any version of Poetry.
+- Inspect the bottom left corner, which should say "Codespaces" (may be located elsewhere in the Windows version)
+- Open a terminal in VS Code and run `python -V`, which should return a Python version >= 3.9.
+- Run `poetry -V`, which should return any version of Poetry.
 
-6. To install the project, in the VS Code terminal run `poetry install`.
+6. When prompted in the notebooks, select the `.venv` Python:
+<p align="center">
+<img src=assets/python-interpreter-1.png>
+<img src=assets/python-interpreter-2.png>
+</p>
 
-7. That's it! You should be all setup now.<!-- You can close VS Code and the tabs you have opened in your browser. -->
-You can delete the codespace to save your account Usage/Storage hours and start a new one during the training. -->
+7. That's it! You should be all setup now. Remember to delete the codespace when you have finished to save your account Usage/Storage hours.
 ![assets/codespace-close.png](assets/codespace-close.png)
 
 ## Slides
