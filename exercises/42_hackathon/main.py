@@ -53,7 +53,7 @@ if prompt:
         messages.append({"role": m["role"], "content": m["content"]})
 
     response = client.chat.completions.create(
-        model=os.environ["GPT_35_CHAT_MODEL_NAME"],
+        model=os.environ["GPT_4_MODEL_NAME"],
         messages=messages,
     )
     assistant_message = response.choices[0].message.content

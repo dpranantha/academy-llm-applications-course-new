@@ -54,7 +54,7 @@ if prompt:
             messages.append({"role": m["role"], "content": m["content"]})
 
         response = client.chat.completions.create(
-            model=os.environ["GPT_35_CHAT_MODEL_NAME"],
+            model=os.environ["GPT_4_MODEL_NAME"],
             messages=messages,
             # Exercise: add max_tokens, temperature and top_p to the completion request
             # YOUR CODE HERE START: test 123

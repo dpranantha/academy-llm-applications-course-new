@@ -1,5 +1,6 @@
 # Don't keep the genreated images
 solutions/04_agents/*.png
+solutions/04_agents/extras/*.png
 
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
