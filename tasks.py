@@ -13,7 +13,7 @@ def chat_gpt_clone(c, solution=False):
         REPO_ROOT
         / root_folder
         / "01_basic_concepts"
-        / "05_chat_GPT_clone_application"
+        / "04_chat_GPT_clone_application"
         / "main.py"
     )
     path = path.resolve().absolute()
@@ -47,7 +47,9 @@ def pydata_qa_bot(c, solution=False):
 def data_chatbot(c, solution=False):
     """Start the "talk to the data" chatbot application. Use the --solution flag to start the solution version."""
     root_folder = "solutions" if solution else "exercises"
-    path = REPO_ROOT / root_folder / "04_agents" / "04_data_chatbot" / "main.py"
+    path = (
+        REPO_ROOT / root_folder / "04_agents" / "extras" / "04_data_chatbot" / "main.py"
+    )
     c.run(f"streamlit run {path}")
 
 
@@ -56,6 +58,20 @@ def hackathon(c, solution=False):
     """Starts the hackathon application. Use the --solution flag to start the solution version."""
     root_folder = "solutions" if solution else "exercises"
     path = REPO_ROOT / root_folder / "42_hackathon" / "main.py"
+    c.run(f"streamlit run {path}")
+
+
+@task
+def streamlit_demo(c, solution=False, exercise=1):
+    """Starts the hackathon application. Use the --solution flag to start the solution version."""
+    root_folder = "solutions" if solution else "exercises"
+    if exercise == 1:
+        file = "1_simple_line_chart.py"
+    elif exercise == 2:
+        file = "2_line_chat_interaction.py"
+    else:
+        file = "3_sidebar.py"
+    path = REPO_ROOT / "streamlit" / root_folder / file
     c.run(f"streamlit run {path}")
 
 
