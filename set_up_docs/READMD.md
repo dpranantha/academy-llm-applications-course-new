@@ -1,6 +1,6 @@
 # Docs for trainers
 
-This folder contains information for setting up with OpenAI on Azure. 
+This folder contains information for setting up with OpenAI on Azure.
 
 
 - [ ] Create a new Azure OpenAI services resource on the [Azure portal](https://portal.azure.com/#home).
