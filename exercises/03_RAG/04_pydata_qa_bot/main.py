@@ -22,7 +22,7 @@ st.set_page_config(
 )
 st.title(title)
 
-MAX_TOKENS_CHAT_GPT = 4096
+MAX_TOKENS = 4096
 
 client = get_openai_client()
 
@@ -241,7 +241,7 @@ if prompt:
 
         # Ensures that the text fits into the token limit of the model by removing the oldest messages
         messages = pop_message_untill_less_tokens_then(
-            messages, MAX_TOKENS_CHAT_GPT - max_tokens
+            messages, MAX_TOKENS - max_tokens
         )
 
         response = client.chat.completions.create(

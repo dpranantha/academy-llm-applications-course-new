@@ -6,14 +6,14 @@ REPO_ROOT = Path(__file__).parent
 
 
 @task
-def chat_gpt_clone(c, solution=False):
-    """Start the chat GPT clone application. Use the --solution flag to start the solution version."""
+def chatbot(c, solution=False):
+    """Start the chatbot application. Use the --solution flag to start the solution version."""
     root_folder = "solutions" if solution else "exercises"
     path = (
         REPO_ROOT
         / root_folder
         / "01_basic_concepts"
-        / "04_chat_GPT_clone_application"
+        / "04_chatbot_application"
         / "main.py"
     )
     path = path.resolve().absolute()

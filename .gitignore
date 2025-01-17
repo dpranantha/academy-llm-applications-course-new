@@ -1,3 +1,6 @@
+# Don't update Academy only material
+docs_for_trainers
+
 # Don't keep the genreated images
 solutions/04_agents/*.png
 solutions/04_agents/extras/*.png

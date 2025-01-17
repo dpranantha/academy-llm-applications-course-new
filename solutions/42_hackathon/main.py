@@ -3,7 +3,7 @@ import os
 import streamlit as st
 from llm_in_production.openai_utils import get_openai_client
 
-PAGE_TILE = "CustomGPT"
+PAGE_TILE = "Custom LLM App"
 st.set_page_config(page_title=PAGE_TILE, page_icon="📊")
 st.title(PAGE_TILE)
 
