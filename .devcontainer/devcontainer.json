@@ -13,6 +13,9 @@
         }
     },
 
+    "features": {
+        "ghcr.io/dhoeric/features/google-cloud-cli:1": "latest"
+    },
 
     "postCreateCommand": "sh .devcontainer/devcontainer_setup.sh",
 

@@ -1,9 +1,10 @@
-# Don't update Academy only material
-docs_for_trainers
-
-# Don't keep the genreated images
+# Don't keep the genreated images/files
 solutions/04_agents/*.png
 solutions/04_agents/extras/*.png
+
+streamlit/*.py
+solutions/01_basic_concepts/04_streamlit_tutorial/*.py
+exercises/01_basic_concepts/04_streamlit_tutorial/*.py
 
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider

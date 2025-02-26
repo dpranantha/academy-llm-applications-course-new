@@ -32,15 +32,6 @@ repos:
 
 - repo: local
   hooks:
-    - id: generate-exercises
-      name: generate-exercises
-      stages: [ commit ]
-      language: python
-      additional_dependencies:
-        - invoke
-      args: [ ]
-      pass_filenames: false
-      entry: invoke generate-exercises
     - id: jupyter-nb-clear-output
       name: jupyter-nb-clear-output
       exclude: ^exercises/.*\.ipynb$
@@ -51,3 +42,12 @@ repos:
         - jupyter
       args: []
       entry: jupyter nbconvert --ClearOutputPreprocessor.enabled=True --ClearMetadataPreprocessor.enabled=True --inplace
+    - id: generate-exercises
+      name: generate-exercises
+      stages: [ commit ]
+      language: python
+      additional_dependencies:
+        - invoke
+      args: [ ]
+      pass_filenames: false
+      entry: invoke generate-exercises
