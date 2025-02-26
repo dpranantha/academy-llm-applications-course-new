@@ -6,6 +6,62 @@ REPO_ROOT = Path(__file__).parent
 
 
 @task
+def simple_line_chart(c, solution=False):
+    root_folder = "solutions" if solution else "exercises"
+    path = (
+        REPO_ROOT
+        / root_folder
+        / "01_basic_concepts"
+        / "04_streamlit_tutorial"
+        / "simple_line_chart.py"
+    )
+    path = path.resolve().absolute()
+    c.run(f"streamlit run {path}")
+
+
+@task
+def interaction(c, solution=False):
+    root_folder = "solutions" if solution else "exercises"
+    path = (
+        REPO_ROOT
+        / root_folder
+        / "01_basic_concepts"
+        / "04_streamlit_tutorial"
+        / "interaction.py"
+    )
+    path = path.resolve().absolute()
+    c.run(f"streamlit run {path}")
+
+
+@task
+def sidebar(c, solution=False):
+    root_folder = "solutions" if solution else "exercises"
+    path = (
+        REPO_ROOT
+        / root_folder
+        / "01_basic_concepts"
+        / "04_streamlit_tutorial"
+        / "sidebar.py"
+    )
+    path = path.resolve().absolute()
+    c.run(f"streamlit run {path}")
+
+
+@task
+def simple_chatbot(c, solution=False):
+    root_folder = "solutions" if solution else "exercises"
+    path = (
+        REPO_ROOT
+        / root_folder
+        / "01_basic_concepts"
+        / "04_streamlit_tutorial"
+        / "simple_chatbot.py"
+    )
+    path = path.resolve().absolute()
+    c.run(f"streamlit run {path}")
+
+
+@task
 def chatbot(c, solution=False):
     """Start the chatbot application. Use the --solution flag to start the solution version."""
     root_folder = "solutions" if solution else "exercises"
@@ -13,7 +69,7 @@ def chatbot(c, solution=False):
         REPO_ROOT
         / root_folder
         / "01_basic_concepts"
-        / "04_chatbot_application"
+        / "05_chatbot_application"
         / "main.py"
     )
     path = path.resolve().absolute()

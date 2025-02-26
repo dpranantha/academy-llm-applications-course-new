@@ -1,17 +1,22 @@
-import os
-
 import dotenv
 
 import streamlit as st
-from llm_in_production.openai_utils import get_openai_client
+from llm_in_production.llm import instantiate_langchain_model
+
+dotenv.load_dotenv()
+
+
+# Here we create the client.
+# Make sure you select the LLM provider that corresponds to the one you are using in this course!
+client = instantiate_langchain_model(
+    llm_provider="azure",
+    # llm_provider="gcp",
+)
 
 PAGE_TILE = "Summarizer App"
 st.set_page_config(page_title=PAGE_TILE, page_icon="📊")
 st.title(PAGE_TILE)
 
-
-dotenv.load_dotenv()
-client = get_openai_client()
 
 with st.sidebar:
     st.header("Settings")
@@ -58,9 +63,8 @@ if prompt:
             {"role": "user", "content": prompt},
         ]
 
-        response = client.chat.completions.create(
-            model=os.environ["GPT_4_MODEL_NAME"],
-            messages=messages,
+        response = client.invoke(
+            input=messages,
             # Exercise: add max_tokens, temperature and top_p to the completion request
             # YOUR CODE HERE START: test 123
             max_tokens=max_tokens,
@@ -68,5 +72,5 @@ if prompt:
             top_p=top_p,
             # YOUR CODE HERE END
         )
-        message = response.choices[0].message.content
+        message = response.content
         message_placeholder.markdown(message)

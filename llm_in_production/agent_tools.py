@@ -5,7 +5,7 @@ import requests
 import yfinance as yf
 
 
-def get_stock_prices(company_stock_ticker_symbol: str, days: int = 7) -> dict:
+def get_stock_prices(company_stock_ticker_symbol: str, period: str = "1mo") -> dict:
     # YOUR CODE HERE START
     """Get recent information about a given stock.
 
@@ -16,7 +16,7 @@ def get_stock_prices(company_stock_ticker_symbol: str, days: int = 7) -> dict:
 
     # time.sleep(4) #To avoid rate limit error
     stock = yf.Ticker(company_stock_ticker_symbol)
-    df = stock.history(period=f"{days}d")
+    df = stock.history(period=period)
     df = df[["Close", "Volume"]]
     df.index = [str(x).split()[0] for x in list(df.index)]
     df.index.rename("Date", inplace=True)

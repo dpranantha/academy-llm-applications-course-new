@@ -10,12 +10,20 @@ Run the following prompt in the terminal to get started:
 poetry run invoke chatbot
 ```
 
+If you are completely stuck and need some inspiration, you can start the solution by running the following command in your terminal at the root of this exercise:
+
+```bash
+poetry run invoke house-description-writer --solution
+```
+
+However, try to solve the exercise yourself before looking at the solution.
+
 ## Exercise 1: Chatbot App
 The goal of this exercise is to create a clone of the Chat-GPT page, i.e. your very own chatbot.
 
 By the end of this exercise, you should be able to chat with an AI assistant in your Streamlit app.
 
-The code for this exercise is in the [pages/0_chatbot.py](./pages/0_chatbot.py) file.
+The code for this exercise is in the [0X_chatbot_application/pages/0_chatbot.py](./pages/0_chatbot.py) file.
 
 Your tasks:
 - Go to the Chatbot page by clicking on the sidebar.
@@ -42,7 +50,7 @@ The goal of this exercise is to create a summarizer application.
 
 By the end of this exercise, you should have an application that gives you a summarization of the user's input.
 
-The code for this exercise is in the [pages/1_summarizer.py](./pages/1_summarizer.py) file.
+The code for this exercise is in the [0X_chatbot_application/pages/1_summarizer.py](./pages/1_summarizer.py) file.
 
 Your tasks:
 - Go to the Summarizer page by clicking on the sidebar.
@@ -62,7 +70,7 @@ This might be a good opportunity to change that one prompt you always use with G
 Feel free to use the code from the other pages as a starting point.
 If you make something cool, please share screenshots with us.
 
-The code for this exercise is in the [pages/02_custom_llm_application.py](./pages/2_custom_llm_application.py) file.
+The code for this exercise is in the [0X_chatbot_application/pages/02_custom_llm_application.py](./pages/2_custom_llm_application.py) file.
 
 Some ideas from the internet:
 - SEO Article Writer LLM

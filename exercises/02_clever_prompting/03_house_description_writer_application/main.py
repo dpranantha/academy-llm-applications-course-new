@@ -1,11 +1,10 @@
 import json
-import os
 from typing import Any
 
 import pydantic
 
 import streamlit as st
-from llm_in_production.openai_utils import get_openai_client
+from llm_in_production.llm import instantiate_langchain_model
 from llm_in_production.text_extraction import (
     BooleanFeature,
     DigitFeature,
@@ -13,7 +12,13 @@ from llm_in_production.text_extraction import (
 )
 
 HOUSE_TYPES = ["Apartment", "House", "Studio"]
-CLIENT = get_openai_client()
+
+# Here we create the client.
+# Make sure you select the LLM provider that corresponds to the one you are using in this course!
+client = instantiate_langchain_model(
+    llm_provider="azure",
+    # llm_provider="gcp",
+)
 
 
 ####################
@@ -49,13 +54,12 @@ def generate_description(data: dict[str, Any]) -> str:
         {"role": "user", "content": json.dumps(data)},
     ]
 
-    response = CLIENT.chat.completions.create(
-        model=os.environ["GPT_35_CHAT_MODEL_NAME"],
-        messages=messages,
+    response = client.invoke(
+        input=messages,
         temperature=1.0,
     )
 
-    message = response.choices[0].message.content
+    message = response.content
     return message
 
 
@@ -65,9 +69,7 @@ def extract_features(description: str) -> HouseFeatures | None:
     :param description:
     :return:
     """
-    # Write a system prompt that explains the task to the model and explain that
-    # the response must be valid JSON parsable by Pydantic using the HouseFeatures schema
-    # YOUR CODE HERE START
+    # YOUR CODE HERE START: Replace this your system prompt.
     # YOUR CODE HERE END
 
     messages = [
@@ -76,30 +78,34 @@ def extract_features(description: str) -> HouseFeatures | None:
         {"role": "user", "content": description},
     ]
 
-    response = CLIENT.chat.completions.create(
-        model=os.environ["GPT_35_CHAT_MODEL_NAME"],
-        messages=messages,
-        response_format={"type": "json_object"},
+    # Invoke the LLM
+    response = client.invoke(
+        input=messages,
+        # Select the correct parameter based on the LLM provider you are using
+        response_format=HouseFeatures,  # OpenAI or Azure
         temperature=0.0,
     )
 
-    message = response.choices[0].message.content
-
-    # Check that the response matches the specific JSON schema
-    try:
-        house_features = HouseFeatures.model_validate_json(message)
-    except pydantic.ValidationError as e:
-        st.error("Attempting to correct initial generation...", icon="🚨")
-        # Tell the LLM to fix the validation errors by:
-        # 1. Adding its response to the messages
-        # 2. Adding a user message explaining that the response did not correspond to the JSON schema and what the errors are
-        # 3. Sending all the messages to the LLM again
-        # 4. Extracting the features from the corrected response
-
-        # YOUR CODE HERE START:
-        # YOUR CODE HERE END
-
+    message = response.content
+    house_features = HouseFeatures.model_validate_json(message)
     return house_features
+
+    # # You may want to include a check that the response matches the specific JSON schema
+    # # If the response does not match the schema, you can ask the LLM to correct the response
+    # try:
+    #     house_features = HouseFeatures.model_validate_json(message)
+    # except pydantic.ValidationError as e:
+    #     st.error("Attempting to correct initial generation...", icon="🚨")
+    #     # Tell the LLM to fix the validation errors by:
+    #     # 1. Adding its response to the messages
+    #     # 2. Adding a user message explaining that the response did not correspond to the JSON schema and what the errors are
+    #     # 3. Sending all the messages to the LLM again
+    #     # 4. Extracting the features from the corrected response
+
+    #     # YOUR CODE HERE START:
+    #     # YOUR CODE HERE END
+
+    # return house_features
 
 
 def on_click_generate(data: dict[str, Any]):

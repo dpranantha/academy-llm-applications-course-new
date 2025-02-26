@@ -43,7 +43,7 @@ def get_openai_client(use_langchain=False, model_name=None, temperature=None):
         else:
             return AzureOpenAI(
                 api_key=os.getenv("OPENAI_API_KEY"),
-                api_version="2024-05-01-preview",
+                api_version="2024-12-01-preview",
                 azure_endpoint=os.getenv("OPENAI_API_BASE"),
                 max_retries=os.getenv("OPENAI_MAX_RETRIES", 5),
             )

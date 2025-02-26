@@ -1,18 +1,15 @@
 import json
-import os
 from pathlib import Path
 
+import dotenv
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 
 import streamlit as st
 from llm_in_production.huggingface_utils import get_device
-from llm_in_production.openai_utils import (
-    get_number_of_tokens,
-    get_openai_client,
-    pop_message_untill_less_tokens_then,
-)
+from llm_in_production.llm import instantiate_langchain_model
+from llm_in_production.rag_utils import pop_messages_until_within_token_limit
 
 title = "PyData Amsterdam 2023 Q&A bot"
 st.set_page_config(
@@ -22,9 +19,18 @@ st.set_page_config(
 )
 st.title(title)
 
-MAX_TOKENS = 4096
+dotenv.load_dotenv()
 
-client = get_openai_client()
+# Here we create the client.
+# Make sure you select the LLM provider that corresponds to the one you are using in this course!
+client = instantiate_langchain_model(
+    # llm_provider="azure",
+    llm_provider="gcp",
+)
+st.write("Powered by", client.model_name)
+
+
+MAX_TOKENS = 8192
 
 # Here we load in the PyData Amsterdam 2023 data.
 with open(Path(__file__).parent / "../pydata.json", "r") as f:
@@ -59,7 +65,7 @@ def build_db(chunk_size: int, chunk_overlap: int):
         ],  # Feel free to add more separators.
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
-        length_function=get_number_of_tokens,
+        length_function=client.get_num_tokens,
         keep_separator=True,  # Feel free to change this.
         strip_whitespace=True,  # Feel free to change this.
     )
@@ -87,6 +93,10 @@ def build_db(chunk_size: int, chunk_overlap: int):
 
         texts.append(f"Speakers: {speakers}")
         metadatas.append(metadata)
+
+        abstract = talk["abstract"]
+        description = talk["description"]
+        # clean_description = re.sub(r'\d+', '', description)
 
         # YOUR CODE HERE START: Chunk the talk description and abstract and add them to the texts and metadatas lists.
         # YOUR CODE HERE END
@@ -238,20 +248,18 @@ if prompt:
         # Add all the messages from the chat history to the messages list
         for m in st.session_state.messages:
             messages.append({"role": m["role"], "content": m["content"]})
-
         # Ensures that the text fits into the token limit of the model by removing the oldest messages
-        messages = pop_message_untill_less_tokens_then(
-            messages, MAX_TOKENS - max_tokens
+        messages = pop_messages_until_within_token_limit(
+            messages, MAX_TOKENS - max_tokens, client
         )
 
-        response = client.chat.completions.create(
-            model=os.environ["GPT_35_CHAT_MODEL_NAME"],
-            messages=messages,
+        response = client.invoke(
+            input=messages,
             max_tokens=max_tokens,
             # YOUR CODE HERE START: Add the settings for temperature and top_p
             # YOUR CODE HERE END
         )
-        assistant_message = response.choices[0].message.content
+        assistant_message = response.content
         # Display assistant message in chat message container
         message_placeholder.markdown(assistant_message)
 

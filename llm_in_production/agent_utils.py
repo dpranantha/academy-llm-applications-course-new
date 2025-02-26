@@ -1,185 +1,117 @@
 import inspect
 import json
-import os
+import logging
 import re
-from typing import Callable
+from typing import Any, Callable, Dict
+
+from langchain_core.utils.function_calling import convert_to_openai_function
+
+# Suppress HTTPX request logs
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
+# Suppress Gemini multiple function call warning
+logging.getLogger("langchain_google_vertexai.chat_models").setLevel(logging.ERROR)
+
+# Suppress LangChain verbose logs (optional)
+logging.getLogger("langchain").setLevel(logging.WARNING)
 
 
-def type_mapping(dtype):
-    """Map Python data types to a JSON equivalent."""
-    if dtype == float:
-        return "number"
-    elif dtype == int:
-        return "integer"
-    elif dtype == str:
-        return "string"
-    else:
-        return "object"
-
-
-def extract_params(doc_str: str):
-    """This function can extract paramter infromation from a docstring.
-
-    When reST-style doc strings are passed to this function, it will return
-    a dict with paramaters as keys and what they represent as values.
-    """
-
-    # split doc string by newline, skipping empty lines
-    params_str = [line for line in doc_str.split("\n") if line.strip()]
-    params = {}
-    for line in params_str:
-        # we only look at lines starting with ':param'
-        if line.strip().startswith(":param"):
-            param_match = re.findall(r"(?<=:param )\w+", line)
-            if param_match:
-                param_name = param_match[0]
-                desc_match = line.replace(f":param {param_name}:", "").strip()
-                # if there is a description, store it
-                if desc_match:
-                    params[param_name] = desc_match
-    return params
-
-
-def function_to_json(func):
-    """Convert a Python function into the JSON format expected by the model."""
-
-    # first we get function name
-    function_name = func.__name__
-    # then we get the function annotations
-    argspec = inspect.getfullargspec(func)
-    # get the function docstring
-    function_doc = inspect.getdoc(func)
-    # parse the docstring to get the description
-    function_description = "".join(
-        [line for line in function_doc.split("\n") if not line.strip().startswith(":")]
-    )
-    # parse the docstring to get the descriptions for each parameter in dict format
-    param_details = extract_params(function_doc) if function_doc else {}
-    # get params
-    params = {}
-    for param_name in argspec.args:
-        # attach parameter types to params
-        params[param_name] = {
-            "description": param_details.get(param_name) or "",
-            "type": type_mapping(argspec.annotations.get(param_name, type(None))),
+def execute_tool(
+    tool_name: str, tool_args: Dict[str, Any], available_tools: Dict[str, Callable]
+) -> str:
+    """Executes a tool and returns the response as a JSON string."""
+    if tool_name not in available_tools:
+        error_message = {
+            "error": f"Tool '{tool_name}' not found. Available tools: {list(available_tools.keys())}"
         }
-    # get optional params
-    optional_params = inspect.getfullargspec(func).defaults
-    # return everything in a dict
-    return {
-        "name": function_name,
-        "description": function_description,
-        "parameters": {"type": "object", "properties": params},
-        "required": [arg for arg in argspec.args if arg not in (optional_params or [])],
-    }
+        logging.error(error_message["error"])
+        return json.dumps(error_message)
+
+    try:
+        return json.dumps(available_tools[tool_name](**tool_args))
+    except Exception as e:
+        logging.error(f"Error executing tool '{tool_name}': {e}")
+        return json.dumps({"error": str(e)})
 
 
-def function_calling_agent(
+def tool_calling_agent(
     client,
     system_prompt: str,
     user_prompt: str,
-    *functions: Callable,
+    *tools: Callable,
     react: bool = False,
-    model_name: str = "GPT_4_MODEL_NAME",
     temperature: float = 0.0,
     iterations: int = 3,
+    seed: int = 0,
 ) -> str:
-    """Returns a response to the given prompts, employing the given functions to help when necessary"""
+    """Generates a response using AI and invokes available tools if necessary."""
 
-    tools = [
-        {"type": "function", "function": function_to_json(func)} for func in functions
+    tool_definitions = [
+        {"type": "function", "function": convert_to_openai_function(tool)}
+        for tool in tools
     ]
-
-    available_functions = {func.__name__: func for func in functions}
+    available_tools = {tool.__name__: tool for tool in tools}
 
     if react:
-        react_prompt = get_react_prompt(functions)
-        system_prompt += react_prompt
+        system_prompt += get_react_prompt(tools)  # Use updated ReAct prompt
 
     messages = [
         {"role": "system", "content": system_prompt},
         {"role": "user", "content": user_prompt},
     ]
 
-    response = client.chat.completions.create(
-        model=os.environ[model_name],  # need a model version 0613 or higher
-        messages=messages,
-        tools=tools,
-        seed=0,
-        temperature=temperature,
-    )
+    output_logs = []
 
-    response_message = response.choices[0].message
-    messages.append(response_message)
+    for i in range(iterations):
+        # Step 1: AI Generates a Thought or an Action
+        response = client.invoke(
+            input=messages, tools=tool_definitions, seed=seed, temperature=temperature
+        )
+        messages.append(response)
+        output_logs.append(f"\n### Model Output:\n\n{response.content}\n")
 
-    output = ""
-    content = response_message.content
-    if content:
-        output += f"\n### Model output: \n \n{content}\n"
+        # Check if the model reached a final answer
+        if "Final Answer:" in response.content:
+            break  # Stop iterating if the model has concluded
 
-    tool_calls = response_message.tool_calls
+        # Step 2: Check if an Action (tool call) is required
+        tool_calls = response.tool_calls
+        if not tool_calls:
+            break  # No tools needed, exit loop
 
-    i = 0  # counter to prevent too many model calls and infinite looping
-    while tool_calls is not None:
-        if i > iterations:
-            raise Exception(
-                "Raising exception to prevent too many model calls and infinite looping"
-            )
-        i += 1
-
-        output += "### Tools called: \n"
+        tool_responses = []
         for tool_call in tool_calls:
-            function_name = tool_call.function.name
+            tool_name = tool_call["name"]
+            tool_args = tool_call["args"]
 
-            if function_name in available_functions.keys():
-                function_to_use = available_functions[function_name]
-                function_args = json.loads(tool_call.function.arguments)
-                function_response = json.dumps(function_to_use(**function_args))
+            # Step 3: Execute the tool and capture response
+            tool_response = execute_tool(tool_name, tool_args, available_tools)
 
-                output += f"\nThe {function_name} function, with the arguments: {function_args}.\n\n"
+            # Log tool execution
+            output_logs.append(
+                f"\n### Tool Called: {tool_name} with args: {tool_args}\n"
+            )
 
-            else:
-                function_response = ask_for_available_tool(
-                    function_name, available_functions
-                )
-
-                output += f"\nReporting to model {function_name} is not an available function.\n\n"
-
-            messages.append(
+            # Step 4: Append the Observation response
+            tool_responses.append(
                 {
-                    "role": "tool",
-                    "name": function_name,
-                    "content": function_response,
-                    "tool_call_id": tool_call.id,
+                    "role": "assistant",  # Keep it within the ReAct format
+                    "content": f"Observation: {tool_response}",
                 }
-            )  # extend conversation with function respons
+            )
 
-        response = client.chat.completions.create(
-            model=os.environ[model_name],  # need a model version 0613 or higher
-            messages=messages,
-            tools=tools,
-            seed=0,
-            temperature=temperature,
-        )  # get a new response using the result of the function call(s)
+        messages.extend(tool_responses)
 
-        response_message = response.choices[0].message
-        messages.append(response_message)
+    else:
+        output_logs.append(
+            "\n### Maximum iterations reached. Stopping further tool calls.\n"
+        )
 
-        content = response_message.content
-        if content:
-            output += f"### Model output: \n \n{content}"
-
-        tool_calls = response_message.tool_calls
-
-    return output
-
-
-def ask_for_available_tool(function_name, available_functions):
-    return f"""Was not able to use {function_name}. It is not one of the available tools: {available_functions}.
-    Try an alternative approach to answering the user's question.""".strip()
+    return "".join(output_logs)
 
 
 def get_react_prompt(tools):
+    """Generates a ReAct-style prompt for decision-making."""
     tool_names = [tool.__name__ for tool in tools]
 
     return f"""
@@ -189,7 +121,7 @@ Use the following format:
 
 Question: the input question you must answer
 Thought: you should always think about what to do
-Action: the action to take, could be one of the given tools: [{tool_names}]
+Action: the action to take, could be one of the given tools: {tool_names}
 At this point you may call for an action to be taken, but you must return the Question and Thought as content in your response
 Observation: the result of the action
 ... (this Thought/Action/Observation can repeat N times)
@@ -198,3 +130,47 @@ Final Answer: the final answer to the original input question
 
 Begin!
 """
+
+
+def type_mapping(dtype):
+    """Map Python data types to a JSON equivalent."""
+    return {
+        float: "number",
+        int: "integer",
+        str: "string",
+    }.get(dtype, "object")
+
+
+def extract_params(doc_str: str):
+    """Extract parameter information from a docstring (reST-style)."""
+    params = {}
+    for line in doc_str.split("\n"):
+        line = line.strip()
+        if line.startswith(":param"):
+            param_match = re.search(r":param (\w+): (.+)", line)
+            if param_match:
+                params[param_match.group(1)] = param_match.group(2)
+    return params
+
+
+def function_to_json(func):
+    """Convert a Python function into the JSON format expected by the model."""
+    argspec = inspect.getfullargspec(func)
+    function_doc = inspect.getdoc(func) or ""
+
+    param_details = extract_params(function_doc)
+    params = {
+        param: {
+            "description": param_details.get(param, ""),
+            "type": type_mapping(argspec.annotations.get(param, type(None))),
+        }
+        for param in argspec.args
+    }
+
+    optional_params = argspec.defaults or ()
+    return {
+        "name": func.__name__,
+        "description": function_doc.split("\n", 1)[0],  # First line of docstring
+        "parameters": {"type": "object", "properties": params},
+        "required": [arg for arg in argspec.args if arg not in optional_params],
+    }
