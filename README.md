@@ -10,9 +10,9 @@ Please run through the **set-up** instructions _before_ the start of the trainin
 
 ## Codespace set-up
 
-If you have a local Python installation, and you can set up Jupyter and Poetry, you will be able to follow the training using your own setup and the editor of your choice.
+While it’s possible to work locally with the code, for a hassle-free setup, we provide a preconfigured devcontainer that launches a fully equipped environment in VS Code, ready for the training. This eliminates the need for local configurations and ensures a smoother experience.
 
-Alternatively, we provide a devcontainer that spins up an environment that you can use within VS Code with everything ready for the training. The steps to set this up are:
+To set it up, follow these steps:
 
 1. ✅ Access the repository
 2. Open or create a codespace on the `main` branch:
@@ -35,8 +35,8 @@ Alternatively, we provide a devcontainer that spins up an environment that you c
 
 To make sure everything is setup correctly you can:
 - Inspect the bottom left corner, which should say "Codespaces" (may be located elsewhere in the Windows version)
-- Open a terminal in VS Code and run `python -V`, which should return a Python version >= 3.9.
-- Run `poetry -V`, which should return any version of Poetry.
+- Open a terminal in VS Code and run `uv run python -V`, which should return a Python version >= 3.11.
+- Open a terminal in VS Code and rpiun `uv pip check` or `uv pip show llm-in-production`.
 
 6. When prompted in the notebooks, select the `.venv` Python:
 <p align="center">
@@ -99,7 +99,7 @@ Please develop and make changes only in the solutions folder.
 Then run the following command to generate the exercises:
 
 ```bash
-poetry run invoke generate-exercises
+uv run invoke generate-exercises
 ```
 
 This will automatically generate the exercises and copy them to the `exercises` folder.
@@ -110,7 +110,7 @@ So you don't have to worry about it.
 You can add the pre-commit hook by running the following command:
 
 ```bash
-poetry run pre-commit install
+uv run pre-commit install
 ```
 
 If you don't use pre-commit, the CI will fail if you forget to run this command.

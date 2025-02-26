@@ -37,13 +37,13 @@ For example, ask it questions such as:
 To run the application, you need to do the following commands in the terminal with your virtual environment activated:
 
 ```bash
-poetry run invoke pydata-qa-bot
+uv run invoke pydata-qa-bot
 ```
 
 If you are completely stuck and need some inspiration, you can start the solution by running the following command in your terminal at the root of this exercise:
 
 ```bash
-poetry run invoke pydata-qa-bot --solution
+uv run invoke pydata-qa-bot --solution
 ```
 
 However, try to solve the exercise yourself before looking at the solution.

@@ -27,13 +27,13 @@ Look for the 'YOUR CODE HERE' comments in the code to identify the specific area
 You can start the application by running the following command in your terminal at the root of this exercise:
 
 ```bash
-poetry run invoke house-description-writer
+uv run invoke house-description-writer
 ```
 
 If you are completely stuck and need some inspiration, you can start the solution by running the following command in your terminal at the root of this exercise:
 
 ```bash
-poetry run invoke house-description-writer --solution
+uv run invoke house-description-writer --solution
 ```
 
 However, try to solve the exercise yourself before looking at the solution.

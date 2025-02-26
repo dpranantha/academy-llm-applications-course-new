@@ -1,4 +1,6 @@
-pip install poetry
-poetry config virtualenvs.in-project true
-poetry install
-poetry run ipython kernel install --user --name=venv
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv python install 3.11.6
+uv python use 3.11.6
+
+uv sync
+uv run python -m ipykernel install --user --name=venv

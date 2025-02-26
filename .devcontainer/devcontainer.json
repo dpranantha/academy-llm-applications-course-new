@@ -3,7 +3,7 @@
 
     "secrets": {
         "OPENAI_API_KEY": {
-            "description": "Azure OpenAI workspace URL. Looks something like: https://<NAME_OF_YOUR_WORKSPACE>.openai.azure.com/",
+            "description": "Azure OpenAI workspace URL. Looks something like: https://<NAME_OF_YOUR_WORKSPACE>.openai.azure.com/"
         },
         "OPENAI_API_BASE": {
             "description": "Azure OpenAI workspace API key."
@@ -15,6 +15,10 @@
 
     "features": {
         "ghcr.io/dhoeric/features/google-cloud-cli:1": "latest"
+    },
+
+    "remoteEnv": {
+        "UV_CACHE_DIR": "/workspaces/.uv-cache"
     },
 
     "postCreateCommand": "sh .devcontainer/devcontainer_setup.sh",

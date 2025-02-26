@@ -11,7 +11,7 @@ What you build is up to you.
 We have set up a StreamLit template [main.py](./main.py) for you that you can run with the following command:
 
 ```bash
-poetry run invoke hackathon
+uv run invoke hackathon
 ```
 
 This will start the application.

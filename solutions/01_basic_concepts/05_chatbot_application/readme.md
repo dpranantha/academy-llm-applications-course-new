@@ -7,13 +7,13 @@ We have provided some skeleton code to help you get started, but you will need t
 Run the following prompt in the terminal to get started:
 
 ```bash
-poetry run invoke chatbot
+uv run invoke chatbot
 ```
 
 If you are completely stuck and need some inspiration, you can start the solution by running the following command in your terminal at the root of this exercise:
 
 ```bash
-poetry run invoke house-description-writer --solution
+uv run invoke house-description-writer --solution
 ```
 
 However, try to solve the exercise yourself before looking at the solution.
