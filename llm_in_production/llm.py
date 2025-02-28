@@ -19,7 +19,7 @@ def instantiate_langchain_model(
             return ChatVertexAI(
                 model="gemini-1.5-flash",
                 project=os.getenv("GCP_PROJECT_ID"),
-                location=os.getenv("GCP_LOCATION")
+                location=os.getenv("GCP_LOCATION"),
             )
 
         case "azure":
