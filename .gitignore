@@ -1,4 +1,7 @@
 # Don't keep the genreated images/files
+.idea
+llm-academy-env
+.venv
 solutions/04_agents/*.png
 solutions/04_agents/extras/*.png
 
